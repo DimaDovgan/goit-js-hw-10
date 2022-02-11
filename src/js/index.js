@@ -1,8 +1,8 @@
 import '../css/styles.css';
 import { fetchCountries } from "./fetchCountries";
-import cauntriesList from "../templates/cauntries-list.hbs"
-import cauntriCart from "../templates/country-cart.hbs"
-const _ = require('lodash');
+import cauntriesList from "../templates/cauntries-list.hbs";
+import cauntriCart from "../templates/country-cart.hbs";
+import lodash from 'lodash';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 const DEBOUNCE_DELAY = 300;
 
@@ -34,24 +34,23 @@ const renderContent = () => {
     {
     if (refs.input.value !== "") {
         
-        fetchCountries(refs.input.value.trim()).then(r => {
-            
-            let newArr = makeNewArr(r);
-            if (r !== undefined) {
+        fetchCountries(refs.input.value.trim()).then(arrCountry => {
+            let importantPropertiesArr = makeNewArr(arrCountry);
+            if (arrCountry !== undefined) {
 
-                if (r.length > 10) {
+                if (arrCountry.length > 10) {
                 Notify.info("Too many matches found. Please enter a more specific name.");
                 return;
                 }
-                if (r.length === 1) {
-                console.log(r);
+                if (arrCountry.length === 1) {
+                
                     refs.list.innerHTML = "";
-                refs.info.innerHTML = cauntriCart(newArr);
+                refs.info.innerHTML = cauntriCart(importantPropertiesArr);
                 return;
                 }
-                console.log(r);
+                
                 refs.info.innerHTML = "";
-                refs.list.innerHTML = cauntriesList(newArr);
+                refs.list.innerHTML = cauntriesList(importantPropertiesArr);
             }
             return;
         });
@@ -64,17 +63,17 @@ const renderContent = () => {
 }
 
 
-const choosesCountries = (Event) => {
-    console.log(Event.currentTarget);
-    console.log("content",Event.target.textContent);
-    console.log(fetchCountries(Event.target.textContent).then(obj => {
-        let newArr = makeNewArr(obj);
+const choosesCountries = (event) => {
+    console.log(event.currentTarget);
+    console.log("content",event.target.textContent);
+    console.log(fetchCountries(event.target.textContent).then(obj => {
+        let importantPropertiesArr = makeNewArr(obj);
         
         refs.list.innerHTML = "";
-        refs.info.innerHTML = cauntriCart(newArr);
+        refs.info.innerHTML = cauntriCart(importantPropertiesArr);
 
     }));
 }
 
-refs.input.addEventListener("input", _.debounce(renderContent, DEBOUNCE_DELAY));
+refs.input.addEventListener("input", lodash.debounce(renderContent, DEBOUNCE_DELAY));
 refs.list.addEventListener("click", choosesCountries);
